@@ -70,13 +70,13 @@ predicted_df = parsed_df.withColumn("predicted_label", predict_label_udf(col("en
 # 6. Snowflake Configuration
 # ---------------------------
 sfOptions = {
-    "sfURL": "dezodls-xz86953.snowflakecomputing.com",
+    "sfURL": "dezodls-xxxxxx.snowflakecomputing.com",
     "sfDatabase": "DATA228_FP",
     "sfSchema": "HALLUCINATION",
     "sfWarehouse": "compute_wh",
     "sfRole": "accountadmin",
-    "sfUser": "adityatekale",
-    "sfPassword": "Aditya@data228",
+    "sfUser": "xyz",
+    "sfPassword": "xxxxxxxx",
     "usestagingtable": "OFF",
     "tempDir": "file:///tmp"
 }

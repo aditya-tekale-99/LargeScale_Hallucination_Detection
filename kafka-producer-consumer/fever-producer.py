@@ -1,49 +1,30 @@
-import json
-import time
-from kafka import KafkaProducer
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import to_json, struct
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
-# Load multilingual NER model
-tokenizer = AutoTokenizer.from_pretrained("Babelscape/wikineural-multilingual-ner")
-model = AutoModelForTokenClassification.from_pretrained("Babelscape/wikineural-multilingual-ner")
-ner_pipeline = pipeline("ner", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
+# --- Define schema based on your data ---
+schema = StructType([
+    StructField("claim", StringType()),
+    StructField("entity_redacted_claim", StringType()),
+    StructField("label", IntegerType())
+])
 
-# Kafka setup
-producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-)
+# --- Start Spark session ---
+spark = SparkSession.builder \
+    .appName("FEVERProducer") \
+    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5") \
+    .getOrCreate()
 
-topic = 'fever-stream'
-input_file = 'fever_cleaned.jsonl'
+# --- Read the JSON data ---
+df = spark.read.schema(schema).json("/Users/adi/Downloads/SJSU/Sem 2/DATA 228/Final Project/LargeScale_Hallucination_Detection/datasets/fever_preprocessed.jsonl")
 
-i = 0
+# --- Serialize and write to Kafka topic ---
+df.select(to_json(struct("*")).alias("value")) \
+    .write \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("topic", "fever-stream") \
+    .save()
 
-# Start streaming
-with open(input_file, 'r', encoding='utf-8') as f:
-    for line in f:
-        if i == 1000:
-            break
-        try:
-            entry = json.loads(line)
-            claim = entry['claim']
-            entities = ner_pipeline(claim)
-            entity_list = list(set(ent['word'] for ent in entities))
 
-            enriched_entry = {
-                'id': entry['id'],
-                'claim': claim,
-                'label': entry['label'],
-                'entities': entity_list
-            }
-
-            producer.send(topic, enriched_entry)
-            print(f"Sent: {enriched_entry}")
-            i += 1
-            time.sleep(1)  # Simulate streaming delay
-
-        except Exception as e:
-            print(f"Error: {e}")
-
-producer.flush()
-producer.close()
+#command to run: spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 fever-producer.py

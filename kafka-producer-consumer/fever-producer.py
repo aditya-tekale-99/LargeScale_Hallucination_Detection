@@ -25,6 +25,11 @@ df.select(to_json(struct("*")).alias("value")) \
     .option("kafka.bootstrap.servers", "localhost:9092") \
     .option("topic", "fever-stream") \
     .save()
+ 
+
+
+
+
 
 
 #command to run: spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 fever-producer.py

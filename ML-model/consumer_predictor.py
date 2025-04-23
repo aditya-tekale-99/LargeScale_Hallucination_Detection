@@ -60,3 +60,6 @@ except Exception as e:
     print(f"Error in model loading or processing: {e}")
     import traceback
     traceback.print_exc()
+
+
+#command to run the code: spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 consumer_predictor.py

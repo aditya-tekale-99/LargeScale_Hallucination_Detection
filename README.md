@@ -19,7 +19,7 @@ This repository encapsulates a scalable framework designed to detect hallucinati
   		  •	 DGIM
   		  •	 Reservoir Sampling
 		  •	 MinHash LSH
-    	•	Dual Storage output to MongoDB and Snowflake
+  	•	Dual Storage output to MongoDB and Snowflake
 
 ### Dataset
 The FEVER (Fact Extraction and VERification) dataset is used as a proxy for hallucinated and factual claims. It includes over 185,000 labeled claims. Redacted claims are used as input to simulate anonymized, AI-generated statements.

@@ -1,0 +1,46 @@
+HALLUCINATION DETECTION MODEL - FEATURE IMPORTANCE ANALYSIS
+============================================================
+
+Model Accuracy: 0.6613
+
+TOP FEATURES INCREASING HALLUCINATION LIKELIHOOD:
+------------------------------------------------------------
+Feature 9151: +3.1077 - Possible words: minority, colonized, defend, draenor., iron.
+Feature 8876: +2.5058 - Possible words: states, authentic, photoelectric, ithf, ex,
+Feature 3111: +2.4895 - Possible words: Unknown
+Feature 2782: +2.4444 - Possible words: covenant, wrangler., respect
+Feature 2713: +2.3719 - Possible words: monastic, published
+Feature 9312: +2.3609 - Possible words: paternal, location, incident., godzilla.
+Feature 9370: +2.1213 - Possible words: #1, erythematosus., seed.
+Feature 9644: +2.0616 - Possible words: integration, workers, mining, polemic
+Feature 8137: +2.0039 - Possible words: blurred, florist
+Feature 9442: +1.9982 - Possible words: practice., package., twin-engine., havoc.
+Feature 8647: +1.9562 - Possible words: inhabited, llewyn
+Feature 6194: +1.9471 - Possible words: bank,
+Feature 2851: +1.9375 - Possible words: geographic, asteroid, subcontinent.
+Feature 4430: +1.9305 - Possible words: inception, exploration., heart".
+Feature 6465: +1.9182 - Possible words: Unknown
+
+TOP FEATURES DECREASING HALLUCINATION LIKELIHOOD:
+------------------------------------------------------------
+Feature 7197: -3.3155 - Possible words: tragedy
+Feature 4989: -3.1618 - Possible words: Unknown
+Feature 5874: -2.9554 - Possible words: electrical, painting,, too., critics, constantinople
+Feature 329: -2.4589 - Possible words: shrank, cursive.
+Feature 3607: -2.2053 - Possible words: sleeping, ventilation, meadows.", looks
+Feature 1833: -2.0686 - Possible words: try, animator., advancement
+Feature 1961: -2.0167 - Possible words: manga
+Feature 9381: -1.9981 - Possible words: Unknown
+Feature 8564: -1.9940 - Possible words: dating, channels., reef., forgo, glen.
+Feature 4271: -1.9670 - Possible words: goblet, sadness., nation-wide.
+Feature 4481: -1.9205 - Possible words: canned, grace, afflicted, rush., everything,
+Feature 9688: -1.8891 - Possible words: slain
+Feature 2216: -1.8831 - Possible words: Unknown
+
+NOTE: Due to hash collisions in the feature extraction process, word-to-feature mappings are approximate and may not be exact.
+
+INTERPRETATION GUIDE:
+------------------------------------------------------------
+Positive coefficients: Features that increase the likelihood of classifying a claim as hallucinating
+Negative coefficients: Features that decrease the likelihood of classifying a claim as hallucinating
+The magnitude (absolute value) indicates how strongly the feature influences the prediction

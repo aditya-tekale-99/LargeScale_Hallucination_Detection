@@ -117,12 +117,12 @@ def process_batch(batch_df, batch_id):
                 print(f"[✓] Loaded existing Reservoir Sampler state from MongoDB.")
             else:
                 # Initialize a new Reservoir Sampler
-                reservoir_size = 100  # Configure your reservoir size
+                reservoir_size = 100  # Configure reservoir size
                 reservoir = ReservoirSampler(reservoir_size)
                 print(f"[i] Initialized new Reservoir Sampler with size {reservoir_size}.")
         except Exception as e:
             # If there's an error, start with a fresh Reservoir Sampler
-            reservoir_size = 100  # Configure your reservoir size
+            reservoir_size = 100  # Configure reservoir size
             reservoir = ReservoirSampler(reservoir_size)
             print(f"[!] Error loading Reservoir Sampler state: {e}")
             print(f"[i] Initialized new Reservoir Sampler with size {reservoir_size}.")
@@ -157,7 +157,6 @@ def process_batch(batch_df, batch_id):
                 false_negatives += 1
             
             # Add to reservoir sampler
-            # We'll add comprehensive information
             row_dict["batch_id"] = batch_id
             row_dict["processed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
             row_dict["predicted_positive"] = predicted_positive

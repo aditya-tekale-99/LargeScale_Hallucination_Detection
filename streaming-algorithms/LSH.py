@@ -41,7 +41,7 @@ def get_mongo_client():
 
 # 3. LSH State Manager
 class LSHState:
-    def __init__(self, threshold=0.7, num_perm=64):  # Reduced from 128 to 64
+    def __init__(self, threshold=0.7, num_perm=64):
         """Initialize LSH state with parameters"""
         self.threshold = threshold
         self.num_perm = num_perm

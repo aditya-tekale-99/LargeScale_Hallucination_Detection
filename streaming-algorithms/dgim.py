@@ -81,15 +81,12 @@ class DGIM:
     def _merge_buckets(self):
         """Merge buckets to maintain at most 2 buckets of each size"""
         for size in sorted(self.buckets.keys()):
-            # If we have more than 2 buckets of this size
             while len(self.buckets[size]) > 2:
-                # Take the two oldest buckets
                 oldest = self.buckets[size].pop(0)
                 second_oldest = self.buckets[size].pop(0)
                 
-                # Create a new bucket of twice the size
                 new_size = size * 2
-                new_timestamp = second_oldest.timestamp  # Use the newer timestamp
+                new_timestamp = second_oldest.timestamp
                 self.buckets[new_size].append(DGIMBucket(new_size, new_timestamp))
 
     def count_ones(self):
@@ -98,9 +95,7 @@ class DGIM:
             return 0
             
         total = 0
-        # Add all complete buckets
         for size, bucket_list in self.buckets.items():
-            # Add all buckets except possibly the last one
             total += size * len(bucket_list)
             
         return total
@@ -161,7 +156,6 @@ def process_with_dgim(batch_df, batch_id):
         raw_data_collection = db["raw_data_sample"]  # Collection for raw data samples
         
         # Process the batch without collecting all data at once
-        # This avoids memory issues by processing one row at a time
         row_count = 0
         positive_count = 0
         sample_rows = []  # Store a small sample of rows
@@ -178,12 +172,12 @@ def process_with_dgim(batch_df, batch_id):
                 print(f"[✓] Loaded existing DGIM state from MongoDB.")
             else:
                 # Initialize a new DGIM instance
-                window_size = 1000  # Configure your sliding window size
+                window_size = 1000  # Configure sliding window size
                 dgim = DGIM(window_size)
                 print(f"[i] Initialized new DGIM with window size {window_size}.")
         except Exception as e:
             # If there's an error, start with a fresh DGIM instance
-            window_size = 1000  # Configure your sliding window size
+            window_size = 1000
             dgim = DGIM(window_size)
             print(f"[!] Error loading DGIM state: {e}")
             print(f"[i] Initialized new DGIM with window size {window_size}.")
@@ -192,7 +186,7 @@ def process_with_dgim(batch_df, batch_id):
         for row in batch_df.toLocalIterator():
             row_count += 1
             
-            # Ensure we're processing an integer bit
+            # Ensure processing an integer bit
             bit_value = 1 if row["is_positive"] == 1 else 0
             if bit_value == 1:
                 positive_count += 1

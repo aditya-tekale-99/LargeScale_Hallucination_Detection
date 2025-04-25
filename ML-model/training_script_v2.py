@@ -91,7 +91,7 @@ feature_to_words = {}
 for word in words:
     # Simplified hash function - approximation of HashingTF's murmur hash
     # Note: This is an approximation and may not exactly match
-    hash_value = abs(hash(word)) % 10000  # Match your numFeatures parameter
+    hash_value = abs(hash(word)) % 10000  # Match with numFeatures parameter
     if hash_value not in feature_to_words:
         feature_to_words[hash_value] = []
     feature_to_words[hash_value].append(word)

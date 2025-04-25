@@ -22,7 +22,7 @@ spark = SparkSession.builder \
 spark.sparkContext.setLogLevel("ERROR")
 
 # Read data once (batch)
-df = spark.read.schema(schema).json("/Users/adi/Downloads/SJSU/Sem 2/DATA 228/Final Project/LargeScale_Hallucination_Detection/datasets/fever_preprocessed.jsonl")
+df = spark.read.schema(schema).json("../datasets/fever_preprocessed.jsonl")
 
 # Define loop-based streaming emulation
 while True:

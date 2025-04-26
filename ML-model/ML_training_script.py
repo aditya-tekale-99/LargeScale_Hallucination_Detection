@@ -28,6 +28,3 @@ accuracy = evaluator.evaluate(predictions)
 print(f"Test Accuracy: {accuracy:.4f}")
 
 model.write().overwrite().save("models/claim_classifier")
-
-
-# command to run: python3  training_script.py

@@ -33,7 +33,7 @@ with open(input_file, 'r', encoding='utf-8') as f_in, open(output_file, 'w', enc
         elif label in ["REFUTES", "NOT ENOUGH INFO"]:
             binary_label = 1
         else:
-            continue  # Skip unknown labels
+            continue
 
         # Extract and redact entities
         claim = entry['claim']

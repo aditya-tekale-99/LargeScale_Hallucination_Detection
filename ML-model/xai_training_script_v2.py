@@ -9,38 +9,29 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-# --- Start Spark ---
 spark = SparkSession.builder \
     .appName("TrainClaimClassifier") \
     .getOrCreate()
 
-# --- Load preprocessed FEVER data (must have entity_redacted_claim and label) ---
 df = spark.read.json("/Users/adi/Downloads/SJSU/Sem 2/DATA 228/Final Project/LargeScale_Hallucination_Detection/datasets/fever_preprocessed.jsonl")
 
-# --- Tokenization + TF + IDF ---
 tokenizer = Tokenizer(inputCol="entity_redacted_claim", outputCol="words")
 tf = HashingTF(inputCol="words", outputCol="rawFeatures", numFeatures=10000)
 idf = IDF(inputCol="rawFeatures", outputCol="features")
 
-# --- Model ---
 lr = LogisticRegression(featuresCol="features", labelCol="label")
 
-# --- Pipeline ---
 pipeline = Pipeline(stages=[tokenizer, tf, idf, lr])
 
-# --- Train/test split ---
 train_df, test_df = df.randomSplit([0.8, 0.2], seed=42)
 
-# --- Train ---
 model = pipeline.fit(train_df)
 
-# --- Evaluate ---
 predictions = model.transform(test_df)
 evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction", metricName="accuracy")
 accuracy = evaluator.evaluate(predictions)
 print(f"Test Accuracy: {accuracy:.4f}")
 
-# --- Save pipeline model ---
 model.write().overwrite().save("models/claim_classifier")
 
 # --------------------------------
@@ -67,7 +58,6 @@ for idx, weight in top_features:
     influence = "Increases hallucination likelihood" if weight > 0 else "Decreases hallucination likelihood"
     print(f"{idx:12d} | {weight:+10.4f} | {influence}")
 
-# Create output directory if it doesn't exist
 os.makedirs("explainable_ai_output", exist_ok=True)
 
 # Save feature importance to CSV
@@ -77,7 +67,6 @@ feature_df["influence"] = feature_df["importance"].apply(
 )
 feature_df.to_csv("explainable_ai_output/feature_importance.csv", index=False)
 
-# --- Try to map features back to words ---
 print("\n\n===== ATTEMPTING TO MAP FEATURES TO WORDS =====")
 print("Note: Due to hashing collisions, multiple words may map to the same feature")
 
@@ -91,7 +80,7 @@ feature_to_words = {}
 for word in words:
     # Simplified hash function - approximation of HashingTF's murmur hash
     # Note: This is an approximation and may not exactly match
-    hash_value = abs(hash(word)) % 10000  # Match with numFeatures parameter
+    hash_value = abs(hash(word)) % 10000
     if hash_value not in feature_to_words:
         feature_to_words[hash_value] = []
     feature_to_words[hash_value].append(word)
@@ -151,7 +140,6 @@ if neg_features:
 plt.tight_layout()
 plt.savefig("explainable_ai_output/feature_importance_chart.png")
 
-# Also create a simple bar chart of absolute importance
 plt.figure(figsize=(14, 8))
 indices = [i for i, _ in top_features]
 values = [abs(w) for _, w in top_features]

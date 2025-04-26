@@ -1,10 +1,7 @@
-# fever_streaming_producer.py
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import to_json, struct, lit
 import time
 
-# Define schema
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 schema = StructType([
@@ -36,4 +33,4 @@ while True:
       .option("topic", "fever-stream") \
       .save()
 
-    time.sleep(5)  # wait 5 seconds before next round (adjust as needed)
+    time.sleep(5)

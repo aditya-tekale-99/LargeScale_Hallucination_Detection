@@ -97,10 +97,10 @@ def process_batch(batch_df, batch_id):
     try:
         # Initialize MongoDB client
         mongo_client = get_mongo_client()
-        db = mongo_client["hallucination_detection"]  # Database name
-        reservoir_state_collection = db["reservoir_state"]  # Collection for state
-        reservoir_samples_collection = db["reservoir_samples"]  # Collection for samples
-        stats_collection = db["reservoir_stats"]  # Collection for statistics
+        db = mongo_client["hallucination_detection"]
+        reservoir_state_collection = db["reservoir_state"]  
+        reservoir_samples_collection = db["reservoir_samples"]  
+        stats_collection = db["reservoir_stats"]  
         
         # Initialize processing stats
         row_count = 0
@@ -108,7 +108,7 @@ def process_batch(batch_df, batch_id):
         # Try to load existing Reservoir Sampler state
         try:
             latest_reservoir = reservoir_state_collection.find_one(
-                sort=[("updated_at", -1)]  # Get the most recent state
+                sort=[("updated_at", -1)]  
             )
             
             if latest_reservoir and "reservoir_state" in latest_reservoir:
@@ -117,12 +117,12 @@ def process_batch(batch_df, batch_id):
                 print(f"[✓] Loaded existing Reservoir Sampler state from MongoDB.")
             else:
                 # Initialize a new Reservoir Sampler
-                reservoir_size = 100  # Configure reservoir size
+                reservoir_size = 100  
                 reservoir = ReservoirSampler(reservoir_size)
                 print(f"[i] Initialized new Reservoir Sampler with size {reservoir_size}.")
         except Exception as e:
             # If there's an error, start with a fresh Reservoir Sampler
-            reservoir_size = 100  # Configure reservoir size
+            reservoir_size = 100 
             reservoir = ReservoirSampler(reservoir_size)
             print(f"[!] Error loading Reservoir Sampler state: {e}")
             print(f"[i] Initialized new Reservoir Sampler with size {reservoir_size}.")
@@ -193,9 +193,9 @@ def process_batch(batch_df, batch_id):
             
             # Insert Reservoir state
             reservoir_state_collection.insert_one(reservoir_state_record)
-            print(f"[✓] Successfully saved Reservoir Sampler state to MongoDB.")
+            print(f"Successfully saved Reservoir Sampler state to MongoDB.")
         except Exception as e:
-            print(f"[!] Error saving Reservoir Sampler state to MongoDB: {e}")
+            print(f"Error saving Reservoir Sampler state to MongoDB: {e}")
         
         # Save statistics to MongoDB
         try:
@@ -224,10 +224,10 @@ def process_batch(batch_df, batch_id):
             
             # Insert statistics
             stats_collection.insert_one(stats_record)
-            print(f"[✓] Successfully saved statistics to MongoDB.")
+            print(f"Successfully saved statistics to MongoDB.")
             
             # Print the statistics
-            print(f"[✓] Reservoir Sampling Results for Batch {batch_id}:")
+            print(f"Reservoir Sampling Results for Batch {batch_id}:")
             print(f"    - Batch size: {stats_record['batch_size']}")
             print(f"    - Reservoir samples: {stats_record['reservoir_sample_count']} of {stats_record['reservoir_size']}")
             print(f"    - Total processed by reservoir: {stats_record['total_processed']}")
@@ -236,7 +236,7 @@ def process_batch(batch_df, batch_id):
             print(f"    - Recall: {stats_record['recall']:.4f}")
             print(f"    - F1 Score: {stats_record['f1_score']:.4f}")
         except Exception as e:
-            print(f"[!] Error saving statistics to MongoDB: {e}")
+            print(f"Error saving statistics to MongoDB: {e}")
         
         # Save reservoir samples to MongoDB (replacing previous samples)
         try:
@@ -247,7 +247,7 @@ def process_batch(batch_df, batch_id):
                 
                 # Then insert new samples
                 reservoir_samples_collection.insert_many(samples)
-                print(f"[✓] Successfully saved {len(samples)} reservoir samples to MongoDB.")
+                print(f"Successfully saved {len(samples)} reservoir samples to MongoDB.")
                 
                 # Sample distribution analysis
                 categories = {"true_positive": 0, "false_positive": 0, "true_negative": 0, "false_negative": 0}
@@ -260,13 +260,13 @@ def process_batch(batch_df, batch_id):
                     percentage = (count / len(samples)) * 100 if len(samples) > 0 else 0
                     print(f"      - {category}: {count} ({percentage:.1f}%)")
         except Exception as e:
-            print(f"[!] Error saving reservoir samples to MongoDB: {e}")
+            print(f"Error saving reservoir samples to MongoDB: {e}")
         
         # Close MongoDB connection
         mongo_client.close()
-        print(f"[✓] Batch {batch_id} processed with Reservoir Sampling.")
+        print(f"Batch {batch_id} processed with Reservoir Sampling.")
     except Exception as e:
-        print(f"[!] Batch {batch_id} error: {e}")
+        print(f"Batch {batch_id} error: {e}")
 
 # 6. Start Stream
 query = parsed_df.writeStream \

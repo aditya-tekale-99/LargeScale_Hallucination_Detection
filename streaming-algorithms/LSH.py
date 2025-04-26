@@ -48,8 +48,8 @@ class LSHState:
         self.lsh = MinHashLSH(threshold=threshold, num_perm=num_perm)
         self.claims = {}  # claim_id -> claim_text
         self.claim_count = 0
-        self.similarity_clusters = {}  # For tracking clusters
-        self.pattern_counts = Counter()  # For tracking common patterns
+        self.similarity_clusters = {} 
+        self.pattern_counts = Counter() 
         
     # Utility: Create word-level n-grams
     def get_ngrams(self, tokens, n=3):
@@ -147,8 +147,8 @@ def process_batch_lsh(batch_df, batch_id):
     try:
         # Initialize MongoDB client
         mongo_client = get_mongo_client()
-        db = mongo_client["hallucination_detection"]  # Database name
-        lsh_patterns_collection = db["lsh_patterns"]  # Collection for common patterns
+        db = mongo_client["hallucination_detection"]  
+        lsh_patterns_collection = db["lsh_patterns"] 
         
         # Stats tracking
         row_count = 0
@@ -157,7 +157,7 @@ def process_batch_lsh(batch_df, batch_id):
         
         # Initialize a new LSH state with reduced parameters
         threshold = 0.7  # LSH similarity threshold
-        num_perm = 64    # Reduced from 128 to 64
+        num_perm = 64  
         lsh_state = LSHState(threshold, num_perm)
         print(f"[i] Initialized new LSH with threshold {threshold} and {num_perm} permutations.")
         
@@ -189,7 +189,6 @@ def process_batch_lsh(batch_df, batch_id):
         print(f"[i] Batch {batch_id} contains {row_count} total records, {positive_claims_count} positive claims.")
         print(f"[i] Found {similarity_count} claims with similarities.")
         
-        # Save common patterns to MongoDB
         try:
             # Get common patterns from LSH state
             patterns = lsh_state.get_common_patterns(top_n=50)
@@ -202,19 +201,18 @@ def process_batch_lsh(batch_df, batch_id):
                     "patterns": [{"pattern": pattern, "count": count} for pattern, count in patterns]
                 }
                 
-                # Clear previous patterns and insert new ones
                 #lsh_patterns_collection.delete_many({})
                 lsh_patterns_collection.insert_one(pattern_record)
                 print(f"[✓] Successfully saved {len(patterns)} common patterns to MongoDB.")
                 
                 # Print top patterns
-                print(f"[✓] Most common patterns in claims:")
-                for pattern, count in patterns[:10]:  # Show top 10
+                print(f"Most common patterns in claims:")
+                for pattern, count in patterns[:10]: 
                     print(f"    - '{pattern}': {count} occurrences")
             else:
-                print(f"[i] No patterns to save.")
+                print(f"No patterns to save.")
         except Exception as e:
-            print(f"[!] Error saving common patterns to MongoDB: {e}")
+            print(f"Error saving common patterns to MongoDB: {e}")
         
         # Clean up LSH state to free memory
         lsh_state.cleanup()
@@ -225,7 +223,7 @@ def process_batch_lsh(batch_df, batch_id):
         # Force garbage collection
         gc.collect()
         
-        print(f"[✓] Batch {batch_id} processed with LSH and sent to MongoDB.")
+        print(f"Batch {batch_id} processed with LSH and sent to MongoDB.")
     except Exception as e:
         print(f"[!] Batch {batch_id} error: {e}")
 

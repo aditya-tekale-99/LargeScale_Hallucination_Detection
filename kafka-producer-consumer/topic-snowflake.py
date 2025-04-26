@@ -2,7 +2,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, current_timestamp
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 
-# 1. Schema
 schema = StructType([
     StructField("claim", StringType()),
     StructField("entity_redacted_claim", StringType()),
@@ -10,7 +9,6 @@ schema = StructType([
     StructField("predicted_label", StringType())
 ])
 
-# 2. Spark Init with memory settings
 spark = SparkSession.builder \
     .appName("KafkaToSnowflake") \
     .config("spark.jars.packages",
@@ -25,7 +23,6 @@ spark = SparkSession.builder \
     .getOrCreate()
 spark.sparkContext.setLogLevel("WARN")
 
-# 3. Kafka Stream
 df = spark.readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "localhost:9092") \
@@ -40,11 +37,10 @@ parsed_df = df.selectExpr("CAST(value AS STRING)") \
     .withColumn("predicted_label", col("predicted_label").cast("double")) \
     .withColumn("timestamp", current_timestamp())
 
-# 4. Snowflake Config
 sfOptions = {
-    "sfURL": "dezodls-xz86953.snowflakecomputing.com",
+    "sfURL": "xxxxxxx-xxxxxxx.snowflakecomputing.com",
     "sfUser": "adityatekale",
-    "sfPassword": "Aditya@data228",
+    "sfPassword": "xxxx228",
     "sfDatabase": "DATA228_FP",
     "sfSchema": "HALLUCINATION",
     "sfWarehouse": "compute_wh",
@@ -54,10 +50,8 @@ sfOptions = {
     "use_exponential_backoff": "on" 
 }
 
-# 5. Batch Writer with error handling
 def write_to_snowflake(batch_df, batch_id):
     try:
-        # Add repartition to control partition size
         batch_df.repartition(4).write \
             .format("snowflake") \
             .options(**sfOptions) \
@@ -68,7 +62,6 @@ def write_to_snowflake(batch_df, batch_id):
     except Exception as e:
         print(f"[!] Batch {batch_id} error: {e}")
 
-# 6. Start Stream
 query = parsed_df.writeStream \
     .foreachBatch(write_to_snowflake) \
     .outputMode("append") \
@@ -77,8 +70,6 @@ query = parsed_df.writeStream \
     .start()
 
 query.awaitTermination()
-
-
 # command to run the code: spark-submit \
 #  --driver-memory 4g \
 #  --executor-memory 4g \
